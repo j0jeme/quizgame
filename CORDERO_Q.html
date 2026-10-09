@@ -1,0 +1,771 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CyberQuest ICT Quiz</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --blue: #00e5ff;
+  --purple: #a855f7;
+  --bg: #070b1b;
+  --panel: #11152c;
+  --text: #f2f5ff;
+  --muted: #a5b0d0;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(ellipse at 15% 10%, #13275c 0%, transparent 40%),
+    radial-gradient(ellipse at 90% 90%, #32134e 0%, transparent 40%),
+    var(--bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px 14px;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: .15;
+  background-image:
+    linear-gradient(#5368b522 1px, transparent 1px),
+    linear-gradient(90deg, #5368b522 1px, transparent 1px);
+  background-size: 35px 35px;
+}
+
+.game {
+  position: relative;
+  width: 100%;
+  max-width: 760px;
+  border: 1px solid #5665a966;
+  border-radius: 24px;
+  padding: 30px;
+  background: #0c1025eF;
+  box-shadow: 0 0 45px #4b35b522, 0 0 100px #00d9ff0a;
+}
+
+.header { text-align: center; margin-bottom: 25px; }
+
+.logo {
+  font-size: 12px;
+  letter-spacing: 5px;
+  color: var(--blue);
+  font-weight: 700;
+}
+
+h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(26px, 5vw, 42px);
+  margin: 13px 0 8px;
+  line-height: 1.2;
+  background: linear-gradient(90deg, #fff, var(--blue), #c084fc);
+  color: transparent;
+  background-clip: text;
+}
+
+.subtitle { color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.stat {
+  padding: 14px 8px;
+  text-align: center;
+  background: #171c38;
+  border: 1px solid #343d68;
+  border-radius: 14px;
+}
+
+.stat-label {
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 20px;
+  color: var(--blue);
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 9px;
+}
+
+.progress-track {
+  height: 7px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #292e4c;
+  margin-bottom: 26px;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--blue), var(--purple));
+  box-shadow: 0 0 12px var(--blue);
+  transition: width .3s ease;
+}
+
+.category {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 1.4px;
+  color: #d8b4fe;
+  border: 1px solid #8b5cf6;
+  background: #7c3aed1c;
+  padding: 7px 11px;
+  border-radius: 20px;
+  margin-bottom: 14px;
+}
+
+#question {
+  font-size: clamp(19px, 3vw, 24px);
+  line-height: 1.5;
+  margin: 0 0 22px;
+}
+
+.answers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.answer {
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 66px;
+  padding: 14px;
+  border-radius: 13px;
+  border: 1px solid #363e64;
+  background: #151a33;
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.answer:hover:not(:disabled) {
+  border-color: var(--blue);
+  background: #142943;
+  transform: translateY(-2px);
+  box-shadow: 0 0 18px #00e5ff15;
+}
+
+.answer:focus-visible, button:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 3px;
+}
+
+.letter {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 31px;
+  height: 31px;
+  border-radius: 9px;
+  background: #292e4c;
+  color: var(--blue);
+  font-weight: 700;
+}
+
+.answer.correct {
+  border-color: #22c55e;
+  background: #14532d35;
+}
+
+.answer.correct .letter {
+  background: #166534;
+  color: white;
+}
+
+.answer.wrong {
+  border-color: #fb7185;
+  background: #88133735;
+}
+
+.answer.wrong .letter {
+  background: #9f1239;
+  color: white;
+}
+
+.answer:disabled { cursor: default; opacity: .85; }
+
+#feedback {
+  display: none;
+  padding: 15px;
+  margin-top: 18px;
+  border-radius: 12px;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+#feedback.show { display: block; }
+#feedback.good { background: #14532d44; border: 1px solid #22c55e66; }
+#feedback.bad { background: #88133744; border: 1px solid #fb718566; }
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+button.primary {
+  border: none;
+  border-radius: 11px;
+  padding: 13px 20px;
+  color: #070b1b;
+  background: linear-gradient(100deg, var(--blue), #a5f3fc);
+  font-weight: 800;
+  cursor: pointer;
+  transition: .2s;
+}
+
+button.primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+button.primary:disabled { opacity: .35; cursor: not-allowed; transform: none; }
+
+.small-note { color: var(--muted); font-size: 12px; }
+
+#startScreen, #resultScreen { text-align: center; }
+
+.hero-icon { font-size: 65px; margin: 18px 0; filter: drop-shadow(0 0 18px #00e5ff66); }
+
+.intro-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  text-align: left;
+  margin: 25px 0;
+}
+
+.intro-item {
+  border: 1px solid #343d68;
+  background: #151a33;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.intro-item strong { display: block; color: var(--blue); margin-bottom: 4px; }
+
+.big-score {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(45px, 10vw, 72px);
+  margin: 25px 0 8px;
+  color: var(--blue);
+  text-shadow: 0 0 25px #00e5ff44;
+}
+
+.result-message { color: var(--muted); line-height: 1.8; }
+
+.result-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 25px 0;
+}
+
+.hidden { display: none !important; }
+
+@media (max-width: 540px) {
+  .game { padding: 20px 15px; }
+  .answers, .intro-list { grid-template-columns: 1fr; }
+  .stat { padding: 12px 5px; }
+  .stat-value { font-size: 17px; }
+  .answer { min-height: 58px; }
+}
+</style>
+</head>
+
+<body>
+<main class="game">
+
+  <header class="header">
+    <div class="logo">◆ DIGITAL LEARNING ARENA ◆</div>
+    <h1>CYBERQUEST ICT</h1>
+    <div class="subtitle">Enter the cyber world. Test your skills. Become a tech master.</div>
+  </header>
+
+  <section id="startScreen">
+    <div class="hero-icon">🛡️</div>
+    <h2>Ready to enter the grid?</h2>
+    <p class="subtitle">
+      Challenge your ICT knowledge across computers, networking,
+      cybersecurity, programming, and digital technology.
+    </p>
+
+    <div class="intro-list">
+      <div class="intro-item"><strong>⚡ 20 Challenges</strong>Multiple-choice ICT questions.</div>
+      <div class="intro-item"><strong>🏆 Score System</strong>Earn one point for every correct answer.</div>
+      <div class="intro-item"><strong>💡 Instant Feedback</strong>Learn from every answer.</div>
+      <div class="intro-item"><strong>🚀 Your Mission</strong>Reach the highest score possible.</div>
+    </div>
+
+    <button class="primary" id="startBtn">START MISSION →</button>
+  </section>
+
+  <section id="quizScreen" class="hidden">
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">QUESTION</div>
+        <div class="stat-value" id="questionStat">01/20</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">SCORE</div>
+        <div class="stat-value" id="scoreStat">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">ACCURACY</div>
+        <div class="stat-value" id="accuracyStat">0%</div>
+      </div>
+    </div>
+
+    <div class="progress-info">
+      <span>MISSION PROGRESS</span>
+      <span id="progressText">0 of 20 completed</span>
+    </div>
+    <div
+      class="progress-track"
+      role="progressbar"
+      aria-label="Quiz progress"
+      aria-valuemin="0"
+      aria-valuemax="20"
+      aria-valuenow="0"
+      id="progressBar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <div class="category" id="category">COMPUTER BASICS</div>
+    <h2 id="question">Question goes here</h2>
+    <div class="answers" id="answers"></div>
+
+    <div id="feedback" role="status" aria-live="polite"></div>
+
+    <div class="actions">
+      <span class="small-note" id="answerNote">Choose your answer.</span>
+      <button class="primary" id="nextBtn" disabled>NEXT →</button>
+    </div>
+  </section>
+
+  <section id="resultScreen" class="hidden">
+    <div class="hero-icon" id="resultIcon">🏆</div>
+    <h2 id="resultTitle">MISSION COMPLETE!</h2>
+    <p class="subtitle">Your ICT challenge results are ready.</p>
+    <div class="big-score" id="finalScore">0/20</div>
+    <div id="finalPercentage" class="subtitle">0% accuracy</div>
+    <p class="result-message" id="resultMessage"></p>
+
+    <div class="result-details">
+      <div class="stat">
+        <div class="stat-label">CORRECT ANSWERS</div>
+        <div class="stat-value" id="correctCount">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">INCORRECT ANSWERS</div>
+        <div class="stat-value" id="wrongCount">0</div>
+      </div>
+    </div>
+
+    <button class="primary" id="restartBtn">↻ PLAY AGAIN</button>
+  </section>
+
+</main>
+
+<script>
+const questions = [
+  {
+    category: "COMPUTER BASICS",
+    q: "Which component is often called the brain of the computer?",
+    options: ["RAM", "CPU", "Hard drive", "Monitor"],
+    answer: 1,
+    explanation: "The CPU processes instructions and performs calculations that run computer programs."
+  },
+  {
+    category: "COMPUTER BASICS",
+    q: "Which of these is an input device?",
+    options: ["Printer", "Speaker", "Keyboard", "Monitor"],
+    answer: 2,
+    explanation: "A keyboard lets users enter text, numbers, and commands into a computer."
+  },
+  {
+    category: "COMPUTER BASICS",
+    q: "What is the main purpose of RAM?",
+    options: [
+      "To temporarily store data in use",
+      "To print documents",
+      "To connect to Wi-Fi",
+      "To permanently store every file"
+    ],
+    answer: 0,
+    explanation: "RAM temporarily holds data and instructions that the computer is actively using."
+  },
+  {
+    category: "COMPUTER BASICS",
+    q: "Which of the following is an operating system?",
+    options: ["Google Chrome", "Microsoft Word", "Adobe Photoshop", "Linux"],
+    answer: 3,
+    explanation: "Linux is an operating system that manages hardware, software, and system resources."
+  },
+  {
+    category: "NETWORKING",
+    q: "What does LAN stand for?",
+    options: [
+      "Large Access Network",
+      "Local Area Network",
+      "Linked Application Node",
+      "Long-distance Access Network"
+    ],
+    answer: 1,
+    explanation: "A Local Area Network connects devices within a limited area, such as a home, school, or office."
+  },
+  {
+    category: "NETWORKING",
+    q: "Which device forwards data between different networks?",
+    options: ["Keyboard", "Webcam", "Router", "Projector"],
+    answer: 2,
+    explanation: "A router forwards packets between networks and helps devices reach destinations such as the internet."
+  },
+  {
+    category: "NETWORKING",
+    q: "What is the main function of an IP address?",
+    options: [
+      "To identify a network interface on an IP network",
+      "To increase screen brightness",
+      "To compress image files",
+      "To protect a keyboard from viruses"
+    ],
+    answer: 0,
+    explanation: "An IP address provides addressing information used to deliver data to a network interface."
+  },
+  {
+    category: "NETWORKING",
+    q: "What does Wi-Fi allow compatible devices to do?",
+    options: [
+      "Print without electricity",
+      "Run without an operating system",
+      "Store unlimited files",
+      "Connect to a network wirelessly"
+    ],
+    answer: 3,
+    explanation: "Wi-Fi uses radio signals to connect compatible devices to a wireless local area network."
+  },
+  {
+    category: "CYBERSECURITY",
+    q: "Which password is generally the strongest?",
+    options: ["12345678", "password", "T!ger_River9#Moon", "yourname2026"],
+    answer: 2,
+    explanation: "A long, unique password with varied characters is harder to guess. A password manager can help generate and store unique passwords."
+  },
+  {
+    category: "CYBERSECURITY",
+    q: "What is phishing?",
+    options: [
+      "A way to improve internet speed",
+      "A deceptive attempt to steal information",
+      "A computer cooling technique",
+      "A method for organizing files"
+    ],
+    answer: 1,
+    explanation: "Phishing uses deceptive messages or websites to trick people into revealing credentials or other sensitive information."
+  },
+  {
+    category: "CYBERSECURITY",
+    q: "Why should you install software security updates?",
+    options: [
+      "They make every password unnecessary",
+      "They eliminate all online risks",
+      "They guarantee faster internet",
+      "They can fix vulnerabilities and bugs"
+    ],
+    answer: 3,
+    explanation: "Security updates can patch weaknesses that attackers might otherwise exploit."
+  },
+  {
+    category: "CYBERSECURITY",
+    q: "You receive an unexpected email asking you to click a link and verify your bank password. What should you do?",
+    options: [
+      "Avoid the link and verify the message through an official channel",
+      "Click immediately before it expires",
+      "Reply with your password",
+      "Forward it to all your classmates"
+    ],
+    answer: 0,
+    explanation: "Unexpected requests for credentials are suspicious. Visit the bank through its official app or website instead."
+  },
+  {
+    category: "PROGRAMMING",
+    q: "Which language is commonly used to add interactivity to web pages?",
+    options: ["HTML", "SQL", "JavaScript", "XML"],
+    answer: 2,
+    explanation: "JavaScript can respond to user actions, update page content, and power interactive web features."
+  },
+  {
+    category: "PROGRAMMING",
+    q: "In JavaScript, which symbol checks whether two values are strictly equal?",
+    options: ["=", "===", "=>", "!="],
+    answer: 1,
+    explanation: "The === operator checks equality without converting values to another type."
+  },
+  {
+    category: "PROGRAMMING",
+    q: "What is the purpose of an if statement in programming?",
+    options: [
+      "To repeat code forever",
+      "To delete every variable",
+      "To create an image file",
+      "To run code when a condition is true"
+    ],
+    answer: 3,
+    explanation: "An if statement makes a decision by checking a condition before executing a block of code."
+  },
+  {
+    category: "WEB TECHNOLOGY",
+    q: "What does HTML primarily define on a web page?",
+    options: ["Its structure and content", "Its physical hardware", "Its internet connection", "Its antivirus database"],
+    answer: 0,
+    explanation: "HTML organizes page content using elements such as headings, paragraphs, images, and links."
+  },
+  {
+    category: "WEB TECHNOLOGY",
+    q: "What is the main role of CSS?",
+    options: [
+      "To route network packets",
+      "To manage a computer's CPU",
+      "To style the appearance of web pages",
+      "To scan for every computer virus"
+    ],
+    answer: 2,
+    explanation: "CSS controls visual presentation, including colors, layouts, typography, and responsive design."
+  },
+  {
+    category: "DIGITAL TECHNOLOGY",
+    q: "Which unit represents 8 bits?",
+    options: ["Kilobyte", "Byte", "Megabyte", "Gigabyte"],
+    answer: 1,
+    explanation: "One byte consists of 8 bits. A bit is a single binary digit, 0 or 1."
+  },
+  {
+    category: "DIGITAL TECHNOLOGY",
+    q: "What is cloud computing?",
+    options: [
+      "Predicting the weather with a computer",
+      "Saving files only on a USB drive",
+      "Using a computer without software",
+      "Using computing resources over a network"
+    ],
+    answer: 3,
+    explanation: "Cloud computing provides resources such as storage, servers, and software over a network, commonly the internet."
+  },
+  {
+    category: "DIGITAL CITIZENSHIP",
+    q: "What is the best practice before sharing someone else's photo online?",
+    options: [
+      "Ask for their permission when appropriate",
+      "Post it publicly without checking",
+      "Add their private information",
+      "Share it with strangers first"
+    ],
+    answer: 0,
+    explanation: "Respecting consent and privacy helps protect other people when sharing content online."
+  }
+];
+
+let current = 0;
+let score = 0;
+let answered = false;
+let order = [];
+
+const $ = id => document.getElementById(id);
+
+function shuffle(array) {
+  const result = [...array];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
+function startGame() {
+  current = 0;
+  score = 0;
+  answered = false;
+  order = shuffle(questions.map((_, i) => i));
+
+  $("startScreen").classList.add("hidden");
+  $("resultScreen").classList.add("hidden");
+  $("quizScreen").classList.remove("hidden");
+
+  showQuestion();
+}
+
+function showQuestion() {
+  answered = false;
+
+  const q = questions[order[current]];
+  const progress = current / questions.length * 100;
+
+  $("questionStat").textContent =
+    String(current + 1).padStart(2, "0") + "/" + questions.length;
+  $("scoreStat").textContent = score;
+  $("accuracyStat").textContent =
+    current === 0 ? "0%" : Math.round(score / current * 100) + "%";
+
+  $("progressText").textContent =
+    current + " of " + questions.length + " completed";
+  $("progressFill").style.width = progress + "%";
+  $("progressBar").setAttribute("aria-valuenow", current);
+
+  $("category").textContent = q.category;
+  $("question").textContent = q.q;
+  $("feedback").className = "";
+  $("feedback").textContent = "";
+  $("answerNote").textContent = "Choose your answer.";
+  $("nextBtn").disabled = true;
+  $("nextBtn").textContent =
+    current === questions.length - 1 ? "VIEW RESULTS →" : "NEXT →";
+
+  const answers = $("answers");
+  answers.replaceChildren();
+
+  q.options.forEach((option, index) => {
+    const button = document.createElement("button");
+    button.className = "answer";
+    button.type = "button";
+
+    const letter = document.createElement("span");
+    letter.className = "letter";
+    letter.textContent = String.fromCharCode(65 + index);
+
+    const label = document.createElement("span");
+    label.textContent = option;
+
+    button.append(letter, label);
+    button.addEventListener("click", () => chooseAnswer(index));
+    answers.appendChild(button);
+  });
+}
+
+function chooseAnswer(selected) {
+  if (answered) return;
+  answered = true;
+
+  const q = questions[order[current]];
+  const buttons = [...$("answers").querySelectorAll(".answer")];
+  const correct = selected === q.answer;
+
+  buttons.forEach((button, index) => {
+    button.disabled = true;
+    if (index === q.answer) button.classList.add("correct");
+    if (index === selected && !correct) button.classList.add("wrong");
+  });
+
+  if (correct) score++;
+
+  $("scoreStat").textContent = score;
+  $("accuracyStat").textContent =
+    Math.round(score / (current + 1) * 100) + "%";
+
+  $("feedback").className = "show " + (correct ? "good" : "bad");
+  $("feedback").textContent =
+    (correct ? "✓ Correct! " : "✕ Not quite. ") + q.explanation;
+
+  $("answerNote").textContent =
+    correct ? "+1 point earned!" : "Keep going, you can do it!";
+  $("nextBtn").disabled = false;
+  $("progressText").textContent =
+    (current + 1) + " of " + questions.length + " completed";
+  $("progressFill").style.width =
+    (current + 1) / questions.length * 100 + "%";
+  $("progressBar").setAttribute("aria-valuenow", current + 1);
+}
+
+function nextQuestion() {
+  if (!answered) return;
+
+  current++;
+
+  if (current < questions.length) {
+    showQuestion();
+  } else {
+    showResults();
+  }
+}
+
+function showResults() {
+  $("quizScreen").classList.add("hidden");
+  $("resultScreen").classList.remove("hidden");
+
+  const total = questions.length;
+  const percentage = Math.round(score / total * 100);
+
+  $("finalScore").textContent = score + "/" + total;
+  $("finalPercentage").textContent = percentage + "% accuracy";
+  $("correctCount").textContent = score;
+  $("wrongCount").textContent = total - score;
+
+  let title, icon, message;
+
+  if (percentage >= 90) {
+    title = "CYBER LEGEND!";
+    icon = "🏆";
+    message = "Outstanding! Your ICT knowledge is powerful. You have earned elite cyber status!";
+  } else if (percentage >= 75) {
+    title = "TECH MASTER!";
+    icon = "🚀";
+    message = "Great work! You have strong ICT skills. Keep learning and aim for a perfect score!";
+  } else if (percentage >= 50) {
+    title = "RISING HACKER!";
+    icon = "⚡";
+    message = "Nice effort! Review the explanations, strengthen your knowledge, and try again.";
+  } else {
+    title = "TRAINING MODE!";
+    icon = "💻";
+    message = "Every expert starts somewhere. Practice the topics, learn from mistakes, and launch another mission!";
+  }
+
+  $("resultTitle").textContent = title;
+  $("resultIcon").textContent = icon;
+  $("resultMessage").textContent = message;
+  $("progressFill").style.width = "100%";
+  $("progressText").textContent = total + " of " + total + " completed";
+}
+
+$("startBtn").addEventListener("click", startGame);
+$("nextBtn").addEventListener("click", nextQuestion);
+$("restartBtn").addEventListener("click", startGame);
+</script>
+</body>
+</html>
